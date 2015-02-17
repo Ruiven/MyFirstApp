@@ -92,10 +92,37 @@ public class MainActivity extends Activity {
      //   return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //setContentView(R.layout.activity_main);
+
+        lv = (ListView) findViewById(R.id.lv);//得到ListView对象的引用
+
+
+        SharedPreferences sharedPref = getSharedPreferences("eventsFile", Context.MODE_PRIVATE);
+        int numOfNotes = sharedPref.getInt("NumberOfNotes", 0);
+
+        //ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+
+        List<String> listItems = new ArrayList<>();
+
+        for(int i = 1; i <= numOfNotes; i++)
+        {
+            listItems.add(sharedPref.getString(Integer.toString(i), "WRONG!"));
+        }
+
+        lv.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, listItems));
+
+
+    }
 
 
     public void addEvent() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        startActivity(intent);
+
+        startActivityForResult(intent, 0);
+
     }
 }

@@ -74,6 +74,8 @@ public class DisplayMessageActivity extends Activity {
             editor.commit();
         }
 
+
         startActivity(intent);
+        finish();
     }
 }
