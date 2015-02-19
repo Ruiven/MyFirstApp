@@ -64,7 +64,7 @@ public class DisplayMessageActivity extends Activity {
         SharedPreferences sharedPref = getSharedPreferences("eventsFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        System.out.println("Here: " + message);
+        //System.out.println("Here: " + message);
 
         if(!message.isEmpty()) {
             int numOfNotes = sharedPref.getInt("NumberOfNotes", 0);
