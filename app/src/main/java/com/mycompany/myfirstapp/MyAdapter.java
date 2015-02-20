@@ -2,6 +2,7 @@ package com.mycompany.myfirstapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.provider.CalendarContract;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +31,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     private Map<String, Object> map = new HashMap<>();
     private List<String> mdataSet = new ArrayList<String>();
     private List<Integer> keyList = new ArrayList<>();
-
+    private static Typeface typeface;
 
     public MyAdapter(Map<String, Object> map) {
 
@@ -56,6 +57,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     }
 
 
+    public void setTypeface(Typeface tf) {
+        typeface = tf;
+    }
 
     public static interface OnRecyclerViewItemClickListener {
         void onClick(View view , String data);
@@ -134,6 +138,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         public ViewHolder(View v) {
             super(v);
             mTextView = (TextView)v.findViewById(R.id.event_item);
+            mTextView.setTypeface(typeface);
+            mTextView.setTextSize(27);
             mCardView = (CardView)v.findViewById(R.id.event_card);
         }
     }

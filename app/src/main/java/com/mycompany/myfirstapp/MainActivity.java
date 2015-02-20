@@ -5,10 +5,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -91,9 +98,9 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch (item.getItemId()) {
-            case R.id.action_add:
-                addEvent();
-                return true;
+//            case R.id.action_add:
+//                addEvent(null);
+//                return true;
             case R.id.action_settings:
                 //openSettings();
                 return true;
@@ -114,6 +121,16 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         //setContentView(R.layout.activity_main);
+
+
+        Typeface titleTF = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Light.ttf");
+        SpannableStringBuilder ss = new SpannableStringBuilder("Notes");
+        ss.setSpan(new CustomTypefaceSpan("", titleTF), 0, ss.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        // Update the action bar title with the TypefaceSpan instance
+        ActionBar actionBar = getActionBar();
+        actionBar.setTitle(ss);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -147,7 +164,7 @@ public class MainActivity extends Activity {
         Map<String, Object> map = (Map<String, Object>)sharedPref.getAll();
 
         mAdapter = new MyAdapter(map);
-        mRecyclerView.setAdapter(mAdapter);
+
 
         //mAdapter.setKeyValueMap(map);
         mAdapter.setOnItemClickListener(new MyAdapter.OnRecyclerViewItemClickListener() {
@@ -162,6 +179,9 @@ public class MainActivity extends Activity {
             }
         });
 
+        Typeface tf = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Thin.ttf");
+        mAdapter.setTypeface(tf);
+        mRecyclerView.setAdapter(mAdapter);
         //lv.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems));
 
 
@@ -169,7 +189,7 @@ public class MainActivity extends Activity {
     }
 
 
-    public void addEvent() {
+    public void addEvent(View view) {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
 
         startActivityForResult(intent, 0);

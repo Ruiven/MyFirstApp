@@ -14,13 +14,16 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="@string/edit_message"
-        android:textColorHint="#000000"
+        android:singleLine="true"
+        android:inputType="textMultiLine"
+
+        android:gravity="left|top"
         />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_send"
-        android:onClick="sendMessage"/>
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/button_send"-->
+        <!--android:onClick="sendMessage"/>-->
 
 </LinearLayout>

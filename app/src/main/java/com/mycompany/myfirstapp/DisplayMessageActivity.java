@@ -49,6 +49,11 @@ public class DisplayMessageActivity extends Activity {
             return true;
         }
 
+        if(id == R.id.action_confirm) {
+            sendMessage(null);
+
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

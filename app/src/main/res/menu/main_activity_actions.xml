@@ -4,10 +4,10 @@
 
 
 
-    <item android:id="@+id/action_add"
-        android:icon="@drawable/ic_action_new"
-        android:title="@string/action_add"
-        android:showAsAction="always" />
+    <!--<item android:id="@+id/action_add"-->
+        <!--android:icon="@drawable/ic_action_new"-->
+        <!--android:title="@string/action_add"-->
+        <!--android:showAsAction="always" />-->
 
 
 
@@ -16,5 +16,7 @@
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:showAsAction="never" />
+
+
 
 </menu>
