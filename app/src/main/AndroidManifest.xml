@@ -4,15 +4,13 @@
 
     <application
         android:allowBackup="true"
-
         android:icon="@drawable/penultimate2"
         android:label="@string/app_name"
-
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
+            android:label="Notes"
             android:launchMode="singleInstance" >
-            android:label="List" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,6 +20,15 @@
         <activity
             android:name=".DisplayMessageActivity"
             android:label="New Note"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mycompany.myfirstapp.MainActivity" />
+        </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

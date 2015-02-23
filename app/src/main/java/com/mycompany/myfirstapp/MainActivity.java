@@ -2,51 +2,44 @@ package com.mycompany.myfirstapp;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.style.TypefaceSpan;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 public class MainActivity extends Activity {
-
-
-    private ListView lv;
-
-
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private String[] mPlanetTitles;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -54,29 +47,110 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recycler_view);
 
-//        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-//        mRecyclerView.setHasFixedSize(true);
-//        mLayoutManager = new LinearLayoutManager(this);
-//        mRecyclerView.setLayoutManager(mLayoutManager);
-//
-//        //lv = (ListView) findViewById(R.id.lv);//得到ListView对象的引用
-//
-//
-//        SharedPreferences sharedPref = getSharedPreferences("eventsFile", Context.MODE_PRIVATE);
-//        int numOfNotes = sharedPref.getInt("NumberOfNotes", 0);
-//
-//        //ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
-//
-//        List<String> listItems = new ArrayList<>();
-//
+        mTitle = mDrawerTitle = getTitle();
+        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        /*---------------------------------------------------*/
+
+
+        Typeface titleTF = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Light.ttf");
+        SpannableStringBuilder ss = new SpannableStringBuilder("Notes List");
+        ss.setSpan(new CustomTypefaceSpan("", titleTF), 0, ss.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+
+        /*----------ActionBar------------------------------------*/
+        // Update the action bar title with the TypefaceSpan instance
+        ActionBar actionBar = getActionBar();
+        actionBar.setTitle(ss);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        /*--------------------------------------------------------*/
+
+
+
+        final SharedPreferences sharedPref = getSharedPreferences("eventsFile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        int numOfNotes = sharedPref.getInt("NumberOfNotes", 0);
+
+        if(numOfNotes == 0) {
+            editor.putInt("NumberOfNotes", 0);
+            editor.commit();
+        }
+
+
+
+       // List<String> listItems = new ArrayList<>();
+
 //        for(int i = 1; i <= numOfNotes; i++)
 //        {
-//            listItems.add(sharedPref.getString(Integer.toString(i), "WRONG!"));
+//            String string = sharedPref.getString(Integer.toString(i)+"title", "");
+//            if(!string.equals("")) {
+//                listItems.add(string);
+//            }
 //        }
-//
-//        mAdapter = new MyAdapter(listItems);
-//        mRecyclerView.setAdapter(mAdapter);
 
+        Map<String, Object> map = (Map<String, Object>)sharedPref.getAll();
+
+        mAdapter = new MyAdapter(map);
+
+
+        mAdapter.setOnItemClickListener(new MyAdapter.OnRecyclerViewItemClickListener() {
+            @Override
+            public void onClick(View view, String data) {
+                String key = data.split(":")[0];
+
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.remove(key+"title");
+                editor.remove(key+"note");
+                editor.commit();
+
+            }
+        });
+
+        Typeface tf = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Thin.ttf");
+        mAdapter.setTypeface(tf);
+        mRecyclerView.setAdapter(mAdapter);
 
 
 
@@ -91,11 +165,17 @@ public class MainActivity extends Activity {
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
         switch (item.getItemId()) {
 //            case R.id.action_add:
@@ -104,6 +184,9 @@ public class MainActivity extends Activity {
             case R.id.action_settings:
                 //openSettings();
                 return true;
+
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -120,25 +203,64 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        //setContentView(R.layout.activity_main);
+        setContentView(R.layout.recycler_view);
 
 
+          /*----------ActionBar------------------------------------*/
         Typeface titleTF = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Light.ttf");
         SpannableStringBuilder ss = new SpannableStringBuilder("Notes");
         ss.setSpan(new CustomTypefaceSpan("", titleTF), 0, ss.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         // Update the action bar title with the TypefaceSpan instance
         ActionBar actionBar = getActionBar();
         actionBar.setTitle(ss);
+        /*--------------------------------------------------------*/
+
+
+        /*------------DrawerList------------------------------*/
+        mTitle = mDrawerTitle = getTitle();
+        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
+
+        /*---------------------------------------------------*/
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-
 
         final SharedPreferences sharedPref = getSharedPreferences("eventsFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -155,7 +277,7 @@ public class MainActivity extends Activity {
 
         for(int i = 1; i <= numOfNotes; i++)
         {
-            String string = sharedPref.getString(Integer.toString(i), "");
+            String string = sharedPref.getString(Integer.toString(i)+"title", "");
             if(!string.equals("")) {
                 listItems.add(string);
             }
@@ -165,16 +287,18 @@ public class MainActivity extends Activity {
 
         mAdapter = new MyAdapter(map);
 
-
-        //mAdapter.setKeyValueMap(map);
         mAdapter.setOnItemClickListener(new MyAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onClick(View view, String data) {
                 String key = data.split(":")[0];
+//
+//                SharedPreferences.Editor editor = sharedPref.edit();
+//                editor.remove(key + "title");
+//                editor.remove(key + "note");
+//                editor.commit();
 
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.remove(key);
-                editor.commit();
+                checkDetail(view, key);
+
 
             }
         });
@@ -182,20 +306,61 @@ public class MainActivity extends Activity {
         Typeface tf = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Thin.ttf");
         mAdapter.setTypeface(tf);
         mRecyclerView.setAdapter(mAdapter);
-        //lv.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems));
-
-
 
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
 
 
     public void addEvent(View view) {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-
         startActivityForResult(intent, 0);
 
     }
 
+    public void checkDetail(View view, String key) {
+        Intent intent = new Intent(this, DetailActivity.class);
+
+        intent.putExtra("DETAIL_KEY", key);
+        startActivity(intent);
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    private void selectItem(int position) {
+        // update the main content by replacing fragments
+        //Fragment fragment = new PlanetFragment();
+        //Bundle args = new Bundle();
+        //args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+        //fragment.setArguments(args);
+
+        ////FragmentManager fragmentManager = getFragmentManager();
+        //fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+        // update selected item and title, then close the drawer
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mPlanetTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
 
 
 }

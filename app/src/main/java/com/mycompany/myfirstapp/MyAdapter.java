@@ -29,8 +29,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
 
     private Map<String, Object> map = new HashMap<>();
-    private List<String> mdataSet = new ArrayList<String>();
+    private List<String> mdataSet = new ArrayList<>();
+    private List<String> mNoteSet = new ArrayList<>();
     private List<Integer> keyList = new ArrayList<>();
+
     private static Typeface typeface;
 
     public MyAdapter(Map<String, Object> map) {
@@ -44,13 +46,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
         for(int i = max ; i >= 1; i--) {
 
-            String event = (String) map.get(Integer.toString(i));
+            String event = (String) map.get(Integer.toString(i) + "title");
+            String note = (String) map.get(Integer.toString(i) + "note");
             if(event != null) {
                 Integer hash = new Random().nextInt(100000);
 
                 String hashStr = String.format("%05d", hash);
                 event = event + "=" + hashStr;
                 mdataSet.add(event);
+                mNoteSet.add(note);
                 keyList.add(i);
             }
         }
@@ -86,24 +90,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-
-
-
-
         String event = mdataSet.get(position);
-        holder.mTextView.setText(event.split("=")[0]);
+        String note = mNoteSet.get(position);
+        holder.mTextView.setText(event.split("=")[0] + " " + note.substring(0,(10<note.length()?10:note.length())));
         holder.mCardView.setTag(Integer.toString(keyList.get(position)) + ":" +event);
     }
 
     @Override
     public void onClick(View v) {
         if (mOnItemClickListener != null) {
+            System.out.println("hahahah");
             //注意这里使用getTag方法获取数据
             mOnItemClickListener.onClick(v,(String)v.getTag());
-            String event = (String) v.getTag();
+            //String event = (String) v.getTag();
 
             //System.out.println(event.split(":")[1]);
-            removeItem(event.split(":")[1]);
+            //removeItem(event.split(":")[1]);
         }
     }
 
@@ -139,7 +141,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
             super(v);
             mTextView = (TextView)v.findViewById(R.id.event_item);
             mTextView.setTypeface(typeface);
-            mTextView.setTextSize(27);
+            //mTextView.setTextSize(27);
             mCardView = (CardView)v.findViewById(R.id.event_card);
         }
     }
