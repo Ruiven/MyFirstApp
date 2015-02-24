@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,9 @@ public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
+    int filter = 0; //All-0, Today-1, This Week-2, This Month-3
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -206,6 +210,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.recycler_view);
 
 
+
+
           /*----------ActionBar------------------------------------*/
         Typeface titleTF = Typeface.createFromAsset(getAssets(), "PFDinDisplayPro-Light.ttf");
         SpannableStringBuilder ss = new SpannableStringBuilder("Notes");
@@ -358,8 +364,14 @@ public class MainActivity extends Activity {
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
+
+        filter = position;
+
+        //Toast.makeText(MainActivity.this, Integer.toString(position), Toast.LENGTH_SHORT).show();
+
         setTitle(mPlanetTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+
     }
 
 

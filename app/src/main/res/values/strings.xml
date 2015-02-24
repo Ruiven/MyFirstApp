@@ -13,13 +13,11 @@
     <string name="fileName">eventsFile</string>
 
     <string-array name="planets_array">
-        <item>Sunday</item>
-        <item>Monday</item>
-        <item>Tuesday</item>
-        <item>Wednesday</item>
-        <item>Thursday</item>
-        <item>Friday</item>
-        <item>Saturday</item>
+        <item>All</item>
+        <item>Today</item>
+        <item>This Week</item>
+        <item>This Month</item>
+
     </string-array>
 
     <string name="drawer_open">Open navigation drawer</string>

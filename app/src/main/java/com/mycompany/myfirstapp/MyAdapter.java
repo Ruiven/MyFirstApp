@@ -92,7 +92,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     public void onBindViewHolder(ViewHolder holder, final int position) {
         String event = mdataSet.get(position);
         String note = mNoteSet.get(position);
-        holder.mTextView.setText(event.split("=")[0] + " " + note.substring(0,(10<note.length()?10:note.length())));
+        holder.mTextView.setText(event.split("=")[0] + "  " + note.substring(0,(10<note.length()?10:note.length())));
         holder.mCardView.setTag(Integer.toString(keyList.get(position)) + ":" +event);
     }
 
@@ -135,13 +135,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
+
         public TextView mTextView;
         public CardView mCardView;
         public ViewHolder(View v) {
             super(v);
             mTextView = (TextView)v.findViewById(R.id.event_item);
             mTextView.setTypeface(typeface);
-            //mTextView.setTextSize(27);
+
+            //mTextView.setTextSize(35);
             mCardView = (CardView)v.findViewById(R.id.event_card);
         }
     }
